@@ -6,6 +6,9 @@ import Home from './pages/home';
 import SideBar from './components/SideBar';
 import Products from './pages/products/Products';
 import Categories from './pages/categories/Categories';
+import Suppliers from './pages/suppliers/Suppliers';
+import Orders from './pages/orders/Orders';
+import OrderForm from './pages/orders/Order-create';
 
 const App = () => {
   return (
@@ -30,7 +33,18 @@ const App = () => {
             <Route path='edit' element={<Home /> } />
             <Route path=':id' element={<Home /> } />
           </Route>
-
+          <Route path='/proveedores'>
+            <Route index element={<Suppliers /> } />
+            <Route path='create' element={<Home /> } />
+            <Route path='edit' element={<Home /> } />
+            <Route path=':id' element={<Home /> } />
+          </Route>
+          <Route path='/compras'>
+            <Route index element={<Orders /> } />
+            <Route path='create' element={<OrderForm /> } />
+            <Route path='edit' element={<Home /> } />
+            <Route path=':id' element={<Home /> } />
+          </Route>
         </Routes>
       </div>
       </BrowserRouter>
