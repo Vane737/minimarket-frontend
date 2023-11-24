@@ -1,3 +1,4 @@
+// Suppliers.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -67,48 +68,52 @@ const Suppliers = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">Proveedores</h1>
+        <div className="container mx-auto p-12">
             <form className="mb-4">
-                <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-600">Nombre:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={proveedor.name}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    />
+                <h1 className="text-3xl mb-4">Proveedores</h1>
+                <div className="flex space-x-4">
+                    <div className="flex-1 mb-2">
+                        <label className="block text-sm font-medium text-gray-600">Nombre:</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={proveedor.name}
+                            onChange={handleInputChange}
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                        />
+                    </div>
+                    <div className="flex-1 mb-2">
+                        <label className="block text-sm font-medium text-gray-600">Correo electrónico:</label>
+                        <input
+                            type="text"
+                            name="email"
+                            value={proveedor.email}
+                            onChange={handleInputChange}
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                        />
+                    </div>
                 </div>
-                <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-600">Correo electrónico:</label>
-                    <input
-                        type="text"
-                        name="email"
-                        value={proveedor.email}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    />
-                </div>
-                <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-600">Teléfono:</label>
-                    <input
-                        type="text"
-                        name="cellphone"
-                        value={proveedor.cellphone}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    />
-                </div>
-                <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-600">Compañía/Empresa:</label>
-                    <input
-                        type="text"
-                        name="company"
-                        value={proveedor.company}
-                        onChange={handleInputChange}
-                        className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    />
+                <div className="flex space-x-4">
+                    <div className="flex-1 mb-2">
+                        <label className="block text-sm font-medium text-gray-600">Teléfono:</label>
+                        <input
+                            type="text"
+                            name="cellphone"
+                            value={proveedor.cellphone}
+                            onChange={handleInputChange}
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                        />
+                    </div>
+                    <div className="flex-1 mb-2">
+                        <label className="block text-sm font-medium text-gray-600">Compañía/Empresa:</label>
+                        <input
+                            type="text"
+                            name="company"
+                            value={proveedor.company}
+                            onChange={handleInputChange}
+                            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                        />
+                    </div>
                 </div>
                 <div className="flex space-x-2">
                     {modoEdicion ? (
@@ -138,27 +143,41 @@ const Suppliers = () => {
                 </div>
             </form>
 
-            <ul>
-                {proveedores.map((proveedor) => (
-                    <li key={proveedor.id} className="mb-2 bg-gray-100 p-2 rounded-md">
-                        {proveedor.nombre} - {proveedor.direccion} - {proveedor.telefono}
-                        <button
-                            type="button"
-                            onClick={() => seleccionarProveedor(proveedor)}
-                            className="ml-2 bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
-                        >
-                            Editar
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => eliminarProveedor(proveedor.id)}
-                            className="ml-2 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                        >
-                            Eliminar
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <table className="min-w-full bg-white border border-gray-300 mb-8">
+                <thead>
+                    <tr>
+                        <th className="py-2 px-4 border-b">Compañía/Empresa</th>
+                        <th className="py-2 px-4 border-b">Correo Electrónico</th>
+                        <th className="py-2 px-4 border-b">Teléfono</th>                       
+                        <th className="py-2 px-4 border-b">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {proveedores.map((proveedor) => (
+                        <tr key={proveedor.id}>
+                            <td className="py-2 px-4 border-b">{proveedor.company}</td>
+                            <td className="py-2 px-4 border-b">{proveedor.email}</td>
+                            <td className="py-2 px-4 border-b">{proveedor.cellphone}</td>
+                            <td className="py-2 px-4 border-b">
+                                <button
+                                    type="button"
+                                    onClick={() => seleccionarProveedor(proveedor)}
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => eliminarProveedor(proveedor.id)}
+                                    className="ml-2 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                                >
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

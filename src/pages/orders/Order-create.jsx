@@ -59,79 +59,107 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Crear Compra</h1>
-      <form className="max-w-md">
-        <div className="mb-4">
-          <label htmlFor="fechaEntrega" className="block text-sm font-medium text-gray-600">
-            Fecha de Entrega:
-          </label>
-          <input
-            type="date"
-            id="fechaEntrega"
-            name="fechaEntrega"
-            value={compra.fechaEntrega}
-            onChange={handleInputChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          />
+    <div className="container mx-auto p-12">
+      <form className="mb-4">
+        <h1 className="text-3xl mb-4">Registrar Compra</h1>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="mb-4">
+              <label htmlFor="fechaEntrega" className="block text-sm font-medium text-gray-600">
+                Fecha de Entrega:
+              </label>
+              <input
+                type="date"
+                id="fechaEntrega"
+                name="fechaEntrega"
+                value={compra.fechaEntrega}
+                onChange={handleInputChange}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="proveedorId" className="block text-sm font-medium text-gray-600">
+                Proveedor:
+              </label>
+              <select
+                id="proveedorId"
+                name="proveedorId"
+                value={compra.proveedorId}
+                onChange={handleInputChange}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              >
+                <option value="" disabled>
+                  Seleccionar Proveedor
+                </option>
+                {proveedores.map((proveedor) => (
+                  <option key={proveedor.id} value={proveedor.id}>
+                    {proveedor.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <div className="bg-gray-100 p-4 rounded-md">
+              <h2 className="text-lg font-semibold mb-2">Resumen de Compra</h2>
+              <div className="mb-2">
+                <strong>Total:</strong> 
+              </div>
+              <div>
+                <strong>Estado:</strong>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="proveedorId" className="block text-sm font-medium text-gray-600">
-            Proveedor:
-          </label>
-          <select
-            id="proveedorId"
-            name="proveedorId"
-            value={compra.proveedorId}
-            onChange={handleInputChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          >
-            <option value="" disabled>
-              Seleccionar Proveedor
-            </option>
-            {proveedores.map((proveedor) => (
-              <option key={proveedor.id} value={proveedor.id}>
-                {proveedor.nombre}
+        <div className="flex space-x-4">
+          <div className="flex-1 mb-4">
+            <label htmlFor="productoId" className="block text-sm font-medium text-gray-600">
+              Producto:
+            </label>
+            <select
+              id="productoId"
+              name="productoId"
+              value={productoNuevo.productoId}
+              onChange={handleProductoChange}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            >
+              <option value="" disabled>
+                Seleccionar Producto
               </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="productoId" className="block text-sm font-medium text-gray-600">
-            Producto:
-          </label>
-          <select
-            id="productoId"
-            name="productoId"
-            value={productoNuevo.productoId}
-            onChange={handleProductoChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          >
-            <option value="" disabled>
-              Seleccionar Producto
-            </option>
-            {productosDisponibles.map((producto) => (
-              <option key={producto.id} value={producto.id}>
-                {producto.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="cantidad" className="block text-sm font-medium text-gray-600">
-            Cantidad:
-          </label>
-          <input
-            type="number"
-            id="cantidad"
-            name="cantidad"
-            value={productoNuevo.cantidad}
-            onChange={handleProductoChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          />
+              {productosDisponibles.map((producto) => (
+                <option key={producto.id} value={producto.id}>
+                  {producto.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex-1 mb-4">
+            <label htmlFor="cantidad" className="block text-sm font-medium text-gray-600">
+              Cantidad:
+            </label>
+            <input
+              type="number"
+              id="cantidad"
+              name="cantidad"
+              value={productoNuevo.cantidad}
+              onChange={handleProductoChange}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            />
+          </div>
+          <div className="flex-1 mb-4">
+            <label htmlFor="total" className="block text-sm font-medium text-gray-600">
+              Total:
+            </label>
+            <input
+              type="text"
+              id="total"
+              name="total"
+              value={productoNuevo.cantidad}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              readOnly
+            />
+          </div>
         </div>
 
         {productos.length > 0 && (
@@ -163,24 +191,6 @@ const OrderForm = () => {
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
           >
             Agregar Producto
-          </button>
-          <Link to="/">
-            <button
-              type="button"
-              className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
-            >
-              Cancelar
-            </button>
-          </Link>
-        </div>
-
-        <div className="flex space-x-2">
-          <button
-            type="button"
-            onClick={agregarCompra}
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          >
-            Agregar Compra
           </button>
         </div>
       </form>
