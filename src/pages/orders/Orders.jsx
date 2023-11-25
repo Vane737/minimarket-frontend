@@ -19,14 +19,14 @@ const Orders = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">Listado de Compras</h1>
-            <Link to="/create">
+        <div className="container mx-auto p-12">
+            <h1 className="text-3xl mb-4">Listado de Compras</h1>
+            <Link to="/compras/create">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                     Agregar Compra
                 </button>
             </Link>
-            <table className="w-full mt-4">
+            <table className="w-full mt-8">
                 <thead>
                     <tr>
                         <th className="border px-4 py-2">Id</th>
