@@ -14,15 +14,15 @@ import OrderForm from './pages/orders/Order-create';
 const App = () => {
   return (
     <div className=''>
-      <BrowserRouter> {/* Proveedor de la libreria */}
+      <BrowserRouter>
         <div className='flex'>
           <div className='basis-[12%] h-[100vh] border'>
             <SideBar />
           </div>
-          <div className='basis-[88%] border'>
+          <div className='basis-[88%] border overflow-y-auto'>
             <Navbar />
             <div className='p-4'>
-              <Routes>       {/* El que contendra las rutas */}
+              <Routes>       
                 <Route path='/' element={<Home />} />
                 <Route path='/home' element={<Home />} />
                 <Route path='/productos'>
