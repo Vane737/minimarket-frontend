@@ -13,7 +13,7 @@ const Suppliers = () => {
 
     const obtenerProveedores = async () => {
         try {
-            const response = await axios.get('http://3.135.147.220/api/suppliers/');
+            const response = await axios.get('https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/suppliers');
             setProveedores(response.data);
         } catch (error) {
             console.error('Error al obtener los proveedores:', error);
@@ -22,7 +22,7 @@ const Suppliers = () => {
 
     const agregarProveedor = async () => {
         try {
-            await axios.post('http://3.135.147.220/api/suppliers/', proveedor);
+            await axios.post('https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/suppliers', proveedor);
             obtenerProveedores();
             limpiarFormulario();
         } catch (error) {
@@ -32,7 +32,7 @@ const Suppliers = () => {
 
     const editarProveedor = async () => {
         try {
-            await axios.put(`http://3.135.147.220/api/suppliers/${idEditando}`, proveedor);
+            await axios.patch(`https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/suppliers/${idEditando}`, proveedor);
             obtenerProveedores();
             limpiarFormulario();
             setModoEdicion(false);
@@ -43,7 +43,7 @@ const Suppliers = () => {
 
     const eliminarProveedor = async (id) => {
         try {
-            await axios.delete(`http://3.135.147.220/api/suppliers/${id}`);
+            await axios.delete(`https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/suppliers/${id}`);
             obtenerProveedores();
         } catch (error) {
             console.error('Error al eliminar el proveedor:', error);
@@ -67,7 +67,8 @@ const Suppliers = () => {
     };
 
     return (
-        <div className="container mx-auto p-12">
+        <div className="container mx-auto p-4">
+            
             <form className="mb-4">
                 <h1 className="text-3xl mb-4">Proveedores</h1>
                 <div className="flex space-x-4">
@@ -114,6 +115,7 @@ const Suppliers = () => {
                         />
                     </div>
                 </div>
+                <br />
                 <div className="flex space-x-2">
                     {modoEdicion ? (
                         <button
@@ -132,21 +134,15 @@ const Suppliers = () => {
                             Agregar Proveedor
                         </button>
                     )}
-                    <button
-                        type="button"
-                        onClick={limpiarFormulario}
-                        className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
-                    >
-                        Limpiar Formulario
-                    </button>
                 </div>
             </form>
 
+            <br />
             <table className="min-w-full bg-white border border-gray-300 mb-8">
                 <thead>
                     <tr>
+                        <th className='py-2 px-4 border-b'>#</th>
                         <th className="py-2 px-4 border-b">Compañía/Empresa</th>
-                        <th className="py-2 px-4 border-b">Correo Electrónico</th>
                         <th className="py-2 px-4 border-b">Teléfono</th>                       
                         <th className="py-2 px-4 border-b">Acciones</th>
                     </tr>
@@ -154,8 +150,8 @@ const Suppliers = () => {
                 <tbody>
                     {proveedores.map((proveedor) => (
                         <tr key={proveedor.id}>
+                            <td className='py-2 px-4 border-b'>{proveedor.id}</td>
                             <td className="py-2 px-4 border-b">{proveedor.company}</td>
-                            <td className="py-2 px-4 border-b">{proveedor.email}</td>
                             <td className="py-2 px-4 border-b">{proveedor.cellphone}</td>
                             <td className="py-2 px-4 border-b">
                                 <button

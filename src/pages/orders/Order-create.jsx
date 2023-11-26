@@ -16,7 +16,8 @@ const OrderForm = () => {
 
   const obtenerProductos = async () => {
     try {
-      const response = await axios.get('URL_DE_TU_API/productos');
+      const response = await axios.get('https://api-gateway-production-cbf6.up.railway.app/api/inventory-microservice/products');
+      console.log(response)
       setProductosDisponibles(response.data);
     } catch (error) {
       console.error('Error al obtener los productos:', error);
@@ -25,7 +26,7 @@ const OrderForm = () => {
 
   const obtenerProveedores = async () => {
     try {
-      const response = await axios.get('URL_DE_TU_API/proveedores');
+      const response = await axios.get('https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/suppliers');
       setProveedores(response.data);
     } catch (error) {
       console.error('Error al obtener los proveedores:', error);
@@ -40,9 +41,7 @@ const OrderForm = () => {
   const agregarCompra = async () => {
     try {
       // Lógica para agregar la compra junto con los productos
-      await axios.post('URL_DE_TU_API/compras', { ...compra, productos });
-      // Puedes redirigir a la página de listado después de agregar la compra si es necesario
-      // history.push('/listado');
+      await axios.post('https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/orders', { ...compra, productos });
     } catch (error) {
       console.error('Error al agregar la compra:', error);
     }
@@ -93,7 +92,7 @@ const OrderForm = () => {
                 </option>
                 {proveedores.map((proveedor) => (
                   <option key={proveedor.id} value={proveedor.id}>
-                    {proveedor.nombre}
+                    {proveedor.company} - {proveedor.name}
                   </option>
                 ))}
               </select>
@@ -103,13 +102,16 @@ const OrderForm = () => {
             <div className="bg-gray-100 p-4 rounded-md">
               <h2 className="text-lg font-semibold mb-2">Resumen de Compra</h2>
               <div className="mb-2">
-                <strong>Total:</strong> 
+                <strong>Total:</strong>
               </div>
               <div>
                 <strong>Estado:</strong>
               </div>
             </div>
           </div>
+          <button onClick={handleCompraGuardar} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            Guardar Compra
+          </button>
         </div>
 
         <div className="flex space-x-4">
@@ -129,7 +131,7 @@ const OrderForm = () => {
               </option>
               {productosDisponibles.map((producto) => (
                 <option key={producto.id} value={producto.id}>
-                  {producto.nombre}
+                  {producto.name}
                 </option>
               ))}
             </select>
@@ -148,6 +150,19 @@ const OrderForm = () => {
             />
           </div>
           <div className="flex-1 mb-4">
+            <label htmlFor="precio" className="block text-sm font-medium text-gray-600">
+              Precio:
+            </label>
+            <input
+              type="text"
+              id="precio"
+              name="precio"
+              value={productoNuevo.precio}
+              onChange={handleProductoChange}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            />
+          </div>
+          <div className="flex-1 mb-4">
             <label htmlFor="total" className="block text-sm font-medium text-gray-600">
               Total:
             </label>
@@ -155,7 +170,7 @@ const OrderForm = () => {
               type="text"
               id="total"
               name="total"
-              value={productoNuevo.cantidad}
+              value={productoNuevo.cantidad * productoNuevo.precio}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               readOnly
             />
