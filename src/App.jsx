@@ -10,6 +10,8 @@ import Categories from './pages/categories/Categories';
 import Suppliers from './pages/suppliers/Suppliers';
 import Orders from './pages/orders/Orders';
 import OrderForm from './pages/orders/Order-create';
+import CreateEditProduct from './pages/products/CreateEditProduct';
+import ReadProduct from './pages/products/ReadProduct';
 
 const App = () => {
   return (
@@ -27,9 +29,9 @@ const App = () => {
                 <Route path='/home' element={<Home />} />
                 <Route path='/productos'>
                   <Route index element={<Products />} />
-                  <Route path='create' element={<Home />} />
-                  <Route path='edit' element={<Home />} />
-                  <Route path=':id' element={<Home />} />
+                  <Route path='create' element={<CreateEditProduct />} />
+                  <Route path='edit/:id' element={<CreateEditProduct />} />
+                  <Route path=':id' element={<ReadProduct />} />
                 </Route>
                 <Route path='/categorias'>
                   <Route index element={<Categories />} />
