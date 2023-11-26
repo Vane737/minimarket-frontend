@@ -1,352 +1,130 @@
 import {
-  AreaChart,
   BadgeDelta,
   Card,
   Flex,
   Grid,
-  Icon,
   Metric,
-  MultiSelect,
-  MultiSelectItem,
   ProgressBar,
-  Select,
-  SelectItem,
   Tab,
   TabGroup,
   TabList,
   TabPanel,
   TabPanels,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
   Text,
-  Title,
 } from "@tremor/react";
-
-const Kpi = {
-  title: '',
-  metric: '',
-  progress: 0,
-  target: '',
-  delta: '',
-  deltaType: '',
-};
-
-const kpiData = [
-  {
-    title: 'Sales',
-    metric: '$ 12,699',
-    progress: 15.9,
-    target: '$ 80,000',
-    delta: '13.2%',
-    deltaType: 'moderateIncrease',
-  },
-  {
-    title: 'Profit',
-    metric: '$ 45,564',
-    progress: 36.5,
-    target: '$ 125,000',
-    delta: '23.9%',
-    deltaType: 'increase',
-  },
-  {
-    title: 'Customers',
-    metric: '1,072',
-    progress: 53.6,
-    target: '2,000',
-    delta: '10.1%',
-    deltaType: 'moderateDecrease',
-  },
-];
-
-import { useState } from 'react';
-
-const usNumberFormatter = (number, decimals = 0) =>
-  Intl.NumberFormat('us', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  })
-    .format(Number(number))
-    .toString();
-
-const formatters = {
-  Sales: (number) => `$ ${usNumberFormatter(number)}`,
-  Profit: (number) => `$ ${usNumberFormatter(number)}`,
-  Customers: (number) => `${usNumberFormatter(number)}`,
-  Delta: (number) => `${usNumberFormatter(number, 2)}%`,
-};
-
-const Kpis = {
-  Sales: 'Sales',
-  Profit: 'Profit',
-  Customers: 'Customers',
-};
-
-const kpiList = [Kpis.Sales, Kpis.Profit, Kpis.Customers];
-
-export const DailyPerformance = {
-  date: '',
-  Sales: 0,
-  Profit: 0,
-  Customers: 0,
-};
-
-export const performance = [
-  {
-    date: '2023-05-01',
-    Sales: 900.73,
-    Profit: 173,
-    Customers: 73,
-  },
-  {
-    date: '2023-05-02',
-    Sales: 1000.74,
-    Profit: 174.6,
-    Customers: 74,
-  },
-  {
-    date: '2023-05-03',
-    Sales: 1100.93,
-    Profit: 293.1,
-    Customers: 293,
-  },
-  {
-    date: '2023-05-04',
-    Sales: 1200.9,
-    Profit: 290.2,
-    Customers: 29,
-  },
-];
-
-export const SalesPerson = {
-  name: '',
-  leads: 0,
-  sales: '',
-  quota: '',
-  variance: '',
-  region: '',
-  status: '',
-};
-
-export const salesPeople = [
-  {
-    name: 'Peter Doe',
-    leads: 45,
-    sales: '1,000,000',
-    quota: '1,200,000',
-    variance: 'low',
-    region: 'Region A',
-    status: 'overperforming',
-  },
-  {
-    name: 'Lena Whitehouse',
-    leads: 35,
-    sales: '900,000',
-    quota: '1,000,000',
-    variance: 'low',
-    region: 'Region B',
-    status: 'average',
-  },
-  {
-    name: 'Phil Less',
-    leads: 52,
-    sales: '930,000',
-    quota: '1,000,000',
-    variance: 'medium',
-    region: 'Region C',
-    status: 'underperforming',
-  },
-  {
-    name: 'John Camper',
-    leads: 22,
-    sales: '390,000',
-    quota: '250,000',
-    variance: 'low',
-    region: 'Region A',
-    status: 'overperforming',
-  },
-  {
-    name: 'Max Balmoore',
-    leads: 49,
-    sales: '860,000',
-    quota: '750,000',
-    variance: 'low',
-    region: 'Region B',
-    status: 'overperforming',
-  },
-];
-
-const deltaTypes = {
-  average: 'unchanged',
-  overperforming: 'moderateIncrease',
-  underperforming: 'moderateDecrease',
-};
+import { useState, useEffect } from "react";
+import axios from "axios";
+import LastSales from "../components/LastSales";
+import BestSellerProducts from "../components/BestSellerProductos";
+import { RevenueChart } from "../components/RevenueChart";
 
 const Home = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedKpi = kpiList[selectedIndex];
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedNames, setSelectedNames] = useState([]);
+  const [leadTime, setLeadTime] = useState();
+  const [totalRevenue, setTotalRevenue] = useState();
+  const [averageTotalRevenue, setAveraageTotalRevenue] = useState();
+  const [totalCustomers, setTotalCustomers] = useState();
+  const [percentCustomers, setPercentCustomers] = useState();
 
-  const isSalesPersonSelected = (salesPerson) =>
-    (salesPerson.status === selectedStatus || selectedStatus === 'all') &&
-    (selectedNames.includes(salesPerson.name) || selectedNames.length === 0);
+  useEffect(() => {
+    getLeadTimeAverage();
+    getTotalRevenueSales();
+    getTotalCustomers();
+  }, [averageTotalRevenue, percentCustomers]);
 
-  const areaChartArgs = {
-    className: 'mt-5 h-72',
-    data: performance,
-    index: 'date',
-    categories: [selectedKpi],
-    colors: ['blue'],
-    showLegend: false,
-    valueFormatter: formatters[selectedKpi],
-    yAxisWidth: 60,
+  const getLeadTimeAverage = async () => {
+    try {
+      const response = await axios.get('https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/order/supplier-delivery-time-average');
+      console.log(response)
+      const promedioTiempoCicloCompras = parseFloat(response.data.promedio_tiempo_ciclo_compras).toFixed(2);
+      setLeadTime(promedioTiempoCicloCompras);
+    } catch (error) {
+      console.error('Error al obtener el dato:', error);
+    }
+  };
+
+  const getTotalRevenueSales = async () => {
+    try {
+      const response = await axios.post('https://api-gateway-production-cbf6.up.railway.app/api/sale-microservice/total-revenue');
+      console.log(response)
+      setTotalRevenue(response.data[0].total);
+      setAveraageTotalRevenue((totalRevenue * 100) / 300000);
+    } catch (error) {
+      console.error('Error al obtener el dato:', error);
+    }
+  };
+
+  const getTotalCustomers = async () => {
+    try {
+      const response = await axios.post('https://api-gateway-production-cbf6.up.railway.app/api/sale-microservice/customers/total');
+      console.log(response)
+      setTotalCustomers(response.data[0].count);
+      setPercentCustomers((totalCustomers * 100) / 400);
+    } catch (error) {
+      console.error('Error al obtener el dato:', error);
+    }
   };
 
   return (
     <div>
       <TabGroup className="mt-6">
         <TabList>
-          <Tab>Overview</Tab>
-          <Tab>Detail</Tab>
+          <Tab>General</Tab>
+          <Tab>Ventas</Tab>
+          <Tab>Productos</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
             <Grid numItemsMd={2} numItemsLg={3} className="mt-6 gap-6">
-              {kpiData.map((item) => (
-                <Card key={item.title}>
-                  <Flex alignItems="start">
-                    <div className="truncate">
-                      <Text>{item.title}</Text>
-                      <Metric className="truncate">{item.metric}</Metric>
-                    </div>
-                    <BadgeDelta deltaType={item.deltaType}>{item.delta}</BadgeDelta>
-                  </Flex>
-                  <Flex className="mt-4 space-x-2">
-                    <Text className="truncate">{`${item.progress}% (${item.metric})`}</Text>
-                    <Text className="truncate">{item.target}</Text>
-                  </Flex>
-                  <ProgressBar value={item.progress} className="mt-2" />
-                </Card>
-              ))}
+              <Card className="max-w-xs mx-auto" decoration="top" decorationColor="indigo">
+                <Flex alignItems="start">
+                  <div className="truncate">
+                    <Text>Tiempo de Entrega Promedio </Text>
+                    <Metric className="truncate">{leadTime} días</Metric>
+                  </div>
+                  <BadgeDelta deltaType="moderateIncrease"></BadgeDelta>
+                </Flex>
+              </Card>
+              <Card className="max-w-xs mx-auto" decoration="top" decorationColor="yellow">
+                <Flex alignItems="start">
+                  <div className="truncate">
+                    <Text>Ventas</Text>
+                    <Metric className="truncate">Bs.- {totalRevenue}</Metric>
+                  </div>
+                  <BadgeDelta deltaType="increase"></BadgeDelta>
+                </Flex>
+                <Flex className="mt-4 space-x-2">
+                  <Text className="truncate">{`${averageTotalRevenue}% (${totalRevenue})`}</Text>
+                  <Text className="truncate">Bs.-300,000</Text>
+                </Flex>
+                <ProgressBar value={averageTotalRevenue} className="mt-2" />
+              </Card>
+              <Card className="max-w-xs mx-auto" decoration="top" decorationColor="green">
+                <Flex alignItems="start">
+                  <div className="truncate">
+                    <Text>Clientes</Text>
+                    <Metric className="truncate">{totalCustomers}</Metric>
+                  </div>
+                  <BadgeDelta deltaType="moderateDecrease"></BadgeDelta>
+                </Flex>
+                <Flex className="mt-4 space-x-2">
+                  <Text className="truncate">{`${percentCustomers}% (${totalCustomers})`}</Text>
+                  <Text className="truncate">400</Text>
+                </Flex>
+                <ProgressBar value={percentCustomers} className="mt-2" />
+              </Card>
             </Grid>
             <div className="mt-6">
-              <Card>
-                <>
-                  <div className="md:flex justify-between">
-                    <div>
-                      <Flex className="space-x-0.5" justifyContent="start" alignItems="center">
-                        <Title> Performance History </Title>
-                        {/* <Icon
-                          icon={InformationCircleIcon}
-                          variant="simple"
-                          tooltip="Shows daily increase or decrease of particular domain"
-                        /> */}
-                      </Flex>
-                      <Text> Daily change per domain </Text>
-                    </div>
-                    <div>
-                      <TabGroup index={selectedIndex} onIndexChange={setSelectedIndex}>
-                        <TabList color="gray" variant="solid">
-                          <Tab>Sales</Tab>
-                          <Tab>Profit</Tab>
-                          <Tab>Customers</Tab>
-                        </TabList>
-                      </TabGroup>
-                    </div>
-                  </div>
-                  {/* web */}
-                  <div className="mt-8 hidden sm:block">
-                    <AreaChart {...areaChartArgs} />
-                  </div>
-                  {/* mobile */}
-                  <div className="mt-8 sm:hidden">
-                    <AreaChart
-                      {...areaChartArgs}
-                      startEndOnly={true}
-                      showGradient={false}
-                      showYAxis={false}
-                    />
-                  </div>
-                </>
-              </Card>
+              <RevenueChart />
             </div>
           </TabPanel>
           <TabPanel>
             <div className="mt-6">
-              <Card>
-                <>
-                  <div>
-                    <Flex className="space-x-0.5" justifyContent="start" alignItems="center">
-                      <Title> Performance History </Title>
-                      {/* <Icon
-                        icon={InformationCircleIcon}
-                        variant="simple"
-                        tooltip="Shows sales performance per employee"
-                      /> */}
-                    </Flex>
-                  </div>
-                  <div className="flex space-x-2">
-                    <MultiSelect
-                      className="max-w-full sm:max-w-xs"
-                      onValueChange={setSelectedNames}
-                      placeholder="Select Salespeople..."
-                    >
-                      {salesPeople.map((item) => (
-                        <MultiSelectItem key={item.name} value={item.name}>
-                          {item.name}
-                        </MultiSelectItem>
-                      ))}
-                    </MultiSelect>
-                    <Select
-                      className="max-w-full sm:max-w-xs"
-                      defaultValue="all"
-                      onValueChange={setSelectedStatus}
-                    >
-                      <SelectItem value="all">All Performances</SelectItem>
-                      <SelectItem value="overperforming">Overperforming</SelectItem>
-                      <SelectItem value="average">Average</SelectItem>
-                      <SelectItem value="underperforming">Underperforming</SelectItem>
-                    </Select>
-                  </div>
-                  <Table className="mt-6">
-                    <TableHead>
-                      <TableRow>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Leads</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Sales ($)</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Quota ($)</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Variance</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Region</TableHeaderCell>
-                        <TableHeaderCell className="text-right">Status</TableHeaderCell>
-                      </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                      {salesPeople
-                        .filter((item) => isSalesPersonSelected(item))
-                        .map((item) => (
-                          <TableRow key={item.name}>
-                            <TableCell>{item.name}</TableCell>
-                            <TableCell className="text-right">{item.leads}</TableCell>
-                            <TableCell className="text-right">{item.sales}</TableCell>
-                            <TableCell className="text-right">{item.quota}</TableCell>
-                            <TableCell className="text-right">{item.variance}</TableCell>
-                            <TableCell className="text-right">{item.region}</TableCell>
-                            <TableCell className="text-right">
-                              <BadgeDelta deltaType={deltaTypes[item.status]} size="xs">
-                                {item.status}
-                              </BadgeDelta>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </>
-              </Card>
+              <LastSales />
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <div className="mt-6">
+              <BestSellerProducts />
             </div>
           </TabPanel>
         </TabPanels>

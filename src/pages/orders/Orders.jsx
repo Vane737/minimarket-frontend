@@ -4,22 +4,29 @@ import axios from 'axios';
 
 const Orders = () => {
     const [compras, setCompras] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
 
     useEffect(() => {
-        obtenerCompras();
-    }, []);
+        obtenerCompras(currentPage);
+    }, [currentPage]);
 
-    const obtenerCompras = async () => {
+    const obtenerCompras = async (page) => {
         try {
-            const response = await axios.get('URL_DE_TU_API/compras');
-            setCompras(response.data);
+            const response = await axios.get(`https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/orders?page=${page}`);
+            setCompras(response.data.data);
+            setLastPage(response.data.last_page);
         } catch (error) {
             console.error('Error al obtener las compras:', error);
         }
     };
 
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
+
     return (
-        <div className="container mx-auto p-12">
+        <div className="container mx-auto p-4">
             <h1 className="text-3xl mb-4">Listado de Compras</h1>
             <Link to="/compras/create">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
@@ -54,6 +61,24 @@ const Orders = () => {
                     ))}
                 </tbody>
             </table>
+
+            {/* Controles de paginación */}
+            <div>
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                    Previous
+                </button>
+
+                {/* Renderiza los números de página o controles adicionales aquí */}
+                {Array.from({ length: lastPage }, (_, index) => (
+                    <button key={index + 1} onClick={() => handlePageChange(index + 1)} disabled={currentPage === index + 1}>
+                        {index + 1}
+                    </button>
+                ))}
+
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === lastPage}>
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
