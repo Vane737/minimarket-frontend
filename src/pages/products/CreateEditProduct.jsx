@@ -1,64 +1,114 @@
 import { useEffect, useState } from "react";
 import api from '../../api/gatewayApi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export default function CreateEditProduct() {
-  const [categoria, setCategoria] = useState({ name: '', description: '' });
+
+  const { id } = useParams();
+  const navigation = useNavigate();
+  // const [categoria, setCategoria] = useState("");
   const [categorias, setCategorias] = useState([]);
-  const [producto, setProducto] = useState({});
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [idEditando, setIdEditando] = useState(null);
+  const [idCategoria, setIdCategoria] = useState("");
+  const [producto, setProducto] = useState({
+    brand: "",
+    code: "",
+    description: "",
+    idCategory: "",
+    name: "",
+    price: 0,
+    stock: 0,
+    unitMeasurement: "",
+  });
+  // const [idEditando, setIdEditando] = useState(null);
 
   useEffect(() => {
+    if (id) {
+      // Modo edición, cargar datos del producto por ID
+      api
+        .get(`/inventory-microservice/products/${id}`)
+        .then((res) => {
+          setProducto(res.data);
+          setIdCategoria(res.data.category.id);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     api
-      .get(`/inventory-microservice/categories`)
-      .then((res) => {
-        setCategorias(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+    .get(`/inventory-microservice/categories`)
+    .then((response) => {
+      console.log(response.data);
+      setCategorias(response.data);
+      // setCategoria(response.data[0].id)
+    })
+    .catch((error) => {
+      console.error('Error al obtener las categorias:', error);
+    });
+    
+  }, [id]);
+  
   const handleCancelar = () => {
     setProducto({});
+    navigation('/productos')
   };
-
+  
   const handleRegistrar = () => {
-    api
-      .post(`/inventory-microservice/products`, producto)
+    if (id) {
+      // Modo edición, hacer la solicitud para actualizar
+      api
+      .put(`/inventory-microservice/products/${id}`, producto)
       .then((res) => {
         console.log(res.data);
         setProducto({});
+        navigation('/productos')
       })
       .catch((err) => {
         console.log(err);
       });
-  }
+    } else {
+      console.log(producto);
+      if (producto.idCategory === "") {
+        console.log("Debe seleccionar una categoria");
+      } else {
+        // Modo registro, hacer la solicitud para crear
+        api
+          .post(`/inventory-microservice/products`, producto)
+          .then((res) => {
+              console.log(res.data);
+              setProducto({});
+              navigation('/productos');
+            })
+            .catch((err) => {
+                console.log("Error!!", err);
+              });
+      }
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCategoria({ ...categoria, [name]: value });
+    setProducto({ ...producto, [name]: value });
   };
 
   return (
     <div className="container mx-auto p-12">
       <form className="mb-4">
-        <h1 className="text-3xl mb-4">Categorias</h1>
+        <h1 className="text-3xl mb-4">Producto</h1>
         <div className="flex space-x-4">
           <div className="flex-1 mb-2">
             <label className="block text-sm font-medium text-gray-600">Categoría:</label>
             <select
+              // value={categoria}
               name="idCategory"
-              value={categoria.categoria} // Ajusta esto según la estructura de tu objeto de categoría
               onChange={handleInputChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             >
-              {categorias.map((categoria, id) => {
-                return (
-                  <option key={id} value={categoria.id}>{categoria.name}</option>
-                )
-              })}
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id} defaultValue={id ? categoria.id === idCategoria : false} >
+                  {categoria.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex-1 mb-2">
@@ -90,7 +140,7 @@ export default function CreateEditProduct() {
             <label className="block text-sm font-medium text-gray-600">Codigo:</label>
             <input
               type="text"
-              name="name"
+              name="code"
               value={producto.code}
               onChange={handleInputChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
@@ -100,7 +150,7 @@ export default function CreateEditProduct() {
             <label className="block text-sm font-medium text-gray-600">Marca:</label>
             <input
               type="text"
-              name="description"
+              name="brand"
               value={producto.brand}
               onChange={handleInputChange}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"

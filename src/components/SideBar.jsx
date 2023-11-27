@@ -5,7 +5,7 @@ import logo from '../assets/logo.png';
 export default function SideBar() {
   return (
     <div className='h-screen'>
-      <aside className="bg-white text-dark w-72 h-screen drop-shadow-lg">
+      <aside className="bg-white text-dark w-72 min-h-screen drop-shadow-lg">
         <div className="mb-8 bg-primary p-4 text-center">
           <div className='h-[80px] w-[80px] mx-auto bg-white p-2'>
             <img src={logo} alt="Logo" className="h-full w-full object-contain" />

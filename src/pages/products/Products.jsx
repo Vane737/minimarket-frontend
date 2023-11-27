@@ -1,77 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../api/gatewayApi';
 import { Link } from 'react-router-dom';
 
 const Products = () => {
   const [productos, setProductos] = useState([]);
-  const [categoria, setCategoria] = useState({ name: '', description: '' });
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [idEditando, setIdEditando] = useState(null);
 
   useEffect(() => {
-    obtenerCategorias();
+    obtenerProductos();
   }, []);
 
-  const obtenerCategorias = async () => {
+  const obtenerProductos = async () => {
     try {
       const response = await api.get('/inventory-microservice/products');
       setProductos(response.data);
     } catch (error) {
-      console.error('Error al obtener las categorias:', error);
+      console.error('Error al obtener los productos:', error);
     }
   };
 
-  const agregarCategoria = async () => {
+  const eliminarProducto = async (id) => {
     try {
-      await api.post('/inventory-microservice/categories', categoria);
-      obtenerCategorias();
-      limpiarFormulario();
+      await api.delete(`inventory-microservice/products/${id}`);
+      obtenerProductos();
     } catch (error) {
-      console.error('Error al agregar una categoria:', error);
+      console.error('Error al eliminar un producto:', error);
     }
   };
-
-  const editarCategoria = async () => {
-    try {
-      await api.put(`/inventory-microservice/categories/${idEditando}`, categoria);
-      obtenerCategorias();
-      limpiarFormulario();
-      setModoEdicion(false);
-    } catch (error) {
-      console.error('Error al editar el proveedor:', error);
-    }
-  };
-
-  const eliminarCategoria = async (id) => {
-    try {
-      await api.delete(`inventory-microservice/categories/${id}`);
-      obtenerCategorias();
-    } catch (error) {
-      console.error('Error al eliminar una categoria:', error);
-    }
-  };
-
-  const limpiarFormulario = () => {
-    setCategoria({ name: '', description: '' });
-    setIdEditando(null);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCategoria({ ...categoria, [name]: value });
-  };
-
-
-  const seleccionarCategoria = (categoria) => {
-    setCategoria(categoria);
-    setIdEditando(categoria.id);
-    setModoEdicion(true);
-  };
+  
   return (
     <div className="container mx-auto p-12">
       <h1 className="text-3xl mb-4">Productos</h1>
-
-      <table className="min-w-full bg-white border border-gray-300 mb-8">
+      <Link to="/productos/create">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            Agregar Producto
+        </button>
+      </Link>
+      <table className="min-w-full bg-white border border-gray-300 my-8">
         <thead>
           <tr>
             <th className="py-2 px-0 border-b">Nombre</th>
@@ -106,7 +70,7 @@ const Products = () => {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => eliminarCategoria(categoria.id)}
+                  onClick={() => eliminarProducto(producto.id)}
                   className="ml-2 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
