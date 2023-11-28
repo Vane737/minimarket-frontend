@@ -50,7 +50,9 @@ const Orders = () => {
                             <td className="border px-4 py-2">{compra.id}</td>
                             <td className="border px-4 py-2">{compra.applicationDate}</td>
                             <td className="border px-4 py-2">{compra.deliveryDate}</td>
-                            <td className="border px-4 py-2"><span className='bg-green-600  pb-1 px-3 text-white font-semibold shadow-md rounded-2xl'>{compra.status}</span></td>
+                            <td className={`border px-4 py-2 `}>
+                                <span className={`pb-1 px-3 text-white font-semibold shadow-md rounded-2xl ${compra.status === 'pending' ? 'bg-pending' : (compra.status === 'shipped' ? 'bg-shipped' : 'bg-delivered')}`}>{compra.status}</span>
+                            </td>
                             <td className="border px-4 py-2">
                                 <Link to={`details/${compra.id}`}>
                                     <button className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600">

@@ -14,6 +14,9 @@ export default {
         primary: '#F39C12',
         secondary: '#DD4B39',
         dark: '#1E1E1E',
+        pending: '#DD4B39',
+        shipped: '#FFA620',
+        delivered: '#00A65A',
         // light mode
         tremor: {
           brand: {

@@ -6,7 +6,6 @@ export default function CreateEditProduct() {
 
   const { id } = useParams();
   const navigation = useNavigate();
-  // const [categoria, setCategoria] = useState("");
   const [categorias, setCategorias] = useState([]);
   const [idCategoria, setIdCategoria] = useState("");
   const [producto, setProducto] = useState({
