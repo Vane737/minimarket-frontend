@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,7 +6,7 @@ const Orders = () => {
     const [compras, setCompras] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
-
+    
     useEffect(() => {
         obtenerCompras(currentPage);
     }, [currentPage]);
@@ -16,6 +16,7 @@ const Orders = () => {
             const response = await axios.get(`https://api-gateway-production-cbf6.up.railway.app/api/order-microservice/orders?page=${page}`);
             setCompras(response.data.data);
             setLastPage(response.data.last_page);
+            
         } catch (error) {
             console.error('Error al obtener las compras:', error);
         }
@@ -49,9 +50,9 @@ const Orders = () => {
                             <td className="border px-4 py-2">{compra.id}</td>
                             <td className="border px-4 py-2">{compra.applicationDate}</td>
                             <td className="border px-4 py-2">{compra.deliveryDate}</td>
-                            <td className="border px-4 py-2">{compra.status}</td>
+                            <td className="border px-4 py-2"><span className='bg-green-600  pb-1 px-3 text-white font-semibold shadow-md rounded-2xl'>{compra.status}</span></td>
                             <td className="border px-4 py-2">
-                                <Link to={`/ver/${compra.id}`}>
+                                <Link to={`details/${compra.id}`}>
                                     <button className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600">
                                         Ver
                                     </button>
