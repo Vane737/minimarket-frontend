@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-
+// import api from '../../api/gatewayApi';
 const CreateSale = () => {
   const navigate = useNavigate();
 
@@ -11,6 +11,8 @@ const CreateSale = () => {
   const [customerId, setCustomerId] = useState(null);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
+  const [productosRelacionados, setProductosRelacionados] = useState([]);
+
   const [detalleVenta, setDetalleVenta] = useState([
     {
       productId: "",
@@ -99,11 +101,42 @@ const CreateSale = () => {
     actualizarTotal(updatedDetalleVenta);
   };
 
-  const handleAgregarProducto = () => {
+  const handleAgregarProducto = async () => {
     setDetalleVenta([
       ...detalleVenta,
       { productId: "", price: 0, quantity: 0, total: 0 },
     ]);
+    
+    const addedProductCode = detalleVenta[detalleVenta.length - 1]?.productId;
+
+    if (addedProductCode) {
+      try {
+        const response = await axios.get(
+          `https://api-gateway-production-cbf6.up.railway.app/api/sale-microservice/sales/related-products/${addedProductCode}`
+        );
+
+        const productosRelacionadosString = response.data.relatedProducts[0].Productos_Relacionados;
+
+        // Reemplazar comillas simples por comillas dobles y luego analizar la cadena JSON
+        const productosRelacionadosNew = JSON.parse(productosRelacionadosString.replace(/'/g, "\""));
+        console.log('primer array obtenido' , productosRelacionadosNew);
+        const productosRelacionadosNuevos = productosRelacionadosNew.slice(1, productosRelacionadosNew.length + 1 );
+          console.log('array rebanado', productosRelacionadosNuevos);
+        // Verificar duplicados y agregar nuevos productos relacionados
+        const productosRelacionadosActualizados = [
+          ...productosRelacionados,
+          ...productosRelacionadosNuevos.filter((nuevoProducto) => (
+            !productosRelacionados.some((productoExistente) => productoExistente.code === nuevoProducto.code)
+          ))
+        ];
+
+        // Actualizar el estado con los productos relacionados
+        setProductosRelacionados(productosRelacionadosActualizados);
+        console.log('array de alamcenamiento', productosRelacionados);
+      } catch (error) {
+        console.error("Error al obtener productos relacionados:", error);
+      }
+    }
   };
 
   const handleEliminarProducto = (index) => {
@@ -122,7 +155,7 @@ const CreateSale = () => {
   };
 
   const handleRegistrarVenta = async () => {
-    console.log({ customerId, total, discount, details: detalleVenta });
+    // console.log({ customerId, total, discount, details: detalleVenta });
     try {
       const response = await axios.post(
         "https://api-gateway-production-cbf6.up.railway.app/api/sale-microservice/sales",
@@ -167,6 +200,9 @@ const CreateSale = () => {
       <div className="w-full flex my-5 justify-center">
         <div>
           <p className="text-center text-xl font-semibold font-sans">Productos recomendados</p>
+          <div>
+            {/* {productosRelacionados} */}
+          </div>
           <div className="flex flex-wrap m-2 w-96">
             <div className="w-full p-2">
               <div className="flex justify-between border-b-2 border-gray-200 px-4 py-2">
@@ -174,7 +210,7 @@ const CreateSale = () => {
                 <p className="font-bold text-dark">Producto</p>
               </div>
             </div>
-            {items.map((item, index) => (
+            {productosRelacionados.map((item, index) => (
               <div key={index} className="w-full px-2">
                 <div className="flex justify-between border rounded-md shadow-sm bg-white px-4 py-2">
                   <p className="text-dark">{item.code}</p>
