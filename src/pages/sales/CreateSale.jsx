@@ -118,9 +118,7 @@ const CreateSale = () => {
         const productosRelacionadosString = response.data.relatedProducts[0].Productos_Relacionados;
 
         // Reemplazar comillas simples por comillas dobles y luego analizar la cadena JSON
-        const productosRelacionadosNew = JSON.parse(productosRelacionadosString.replace(/'/g, "\""));
-        console.log('primer array obtenido' , productosRelacionadosNew);
-        const productosRelacionadosNuevos = productosRelacionadosNew.slice(1, productosRelacionadosNew.length + 1 );
+        const productosRelacionadosNuevos = JSON.parse(productosRelacionadosString.replace(/'/g, "\""));
           console.log('array rebanado', productosRelacionadosNuevos);
         // Verificar duplicados y agregar nuevos productos relacionados
         const productosRelacionadosActualizados = [
