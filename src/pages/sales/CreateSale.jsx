@@ -20,6 +20,13 @@ const CreateSale = () => {
     },
   ]);
 
+  const items = [
+    { name: "Arroz", code: "000012" },
+    { name: "Aceite de Soja", code: "000013" },
+    { name: "Leche Fresca", code: "000014" },
+    // ... otros productos
+  ];
+
   useEffect(() => {
     obtenerClientes();
     obtenerProductos();
@@ -156,6 +163,27 @@ const CreateSale = () => {
           onChange={handleClienteChange}
           isSearchable
         />
+      </div>
+      <div className="w-full flex my-5 justify-center">
+        <div>
+          <p className="text-center text-xl font-semibold font-sans">Productos recomendados</p>
+          <div className="flex flex-wrap m-2 w-96">
+            <div className="w-full p-2">
+              <div className="flex justify-between border-b-2 border-gray-200 px-4 py-2">
+                <p className="font-bold text-dark">Codigo</p>
+                <p className="font-bold text-dark">Producto</p>
+              </div>
+            </div>
+            {items.map((item, index) => (
+              <div key={index} className="w-full px-2">
+                <div className="flex justify-between border rounded-md shadow-sm bg-white px-4 py-2">
+                  <p className="text-dark">{item.code}</p>
+                  <p className="text-dark">{item.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       <table className="w-full mb-4">
         <thead>
